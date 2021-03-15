@@ -1,5 +1,5 @@
-import React from 'react';
-import { ThemeConsumer } from '../contexts/theme';
+import React, { useContext } from 'react';
+import Theme from '../contexts/theme';
 import { NavLink } from 'react-router-dom';
 
 const activeStyle = {
@@ -7,40 +7,38 @@ const activeStyle = {
 };
 
 export default function Nav() {
+  const { theme, toggleTheme } = useContext( Theme );
+
   return (
-    <ThemeConsumer>
-      {({ theme, toggleTheme }) => (
-        <nav className="row space-between">
-          <ul className="row nav">
-            <li>
-              <NavLink
-                exact
-                to="/"
-                className="nav-link"
-                activeStyle={activeStyle}
-              >
-                Popular
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/battle"
-                className="nav-link"
-                activeStyle={activeStyle}
-              >
-                Battle
-              </NavLink>
-            </li>
-          </ul>
-          <button
-            style={{fontSize: 30}}
-            className="btn-clear"
-            onClick={toggleTheme}
+    <nav className="row space-between">
+      <ul className="row nav">
+        <li>
+          <NavLink
+            exact
+            to="/"
+            className="nav-link"
+            activeStyle={activeStyle}
           >
-            {theme === 'light' ? '🔦' : '💡'}
-          </button>
-        </nav>
-      )}
-    </ThemeConsumer>
+            Popular
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/battle"
+            className="nav-link"
+            activeStyle={activeStyle}
+          >
+            Battle
+          </NavLink>
+        </li>
+      </ul>
+      <button
+        style={{fontSize: 30}}
+        className="btn-clear"
+        onClick={toggleTheme}
+      >
+        {theme === 'light' ? '🔦' : '💡'}
+      </button>
+    </nav>
   );
 }
