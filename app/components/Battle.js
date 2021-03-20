@@ -1,7 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useReducer } from 'react';
 import { FaUserFriends, FaFighterJet, FaTrophy, FaTimesCircle, FaTimes } from 'react-icons/fa';
 import PropTypes from 'prop-types';
-import Results from './Results';
 import Theme from '../contexts/theme';
 import { Link } from 'react-router-dom';
 
@@ -104,71 +103,75 @@ PlayerPreview.propTypes = {
   label: PropTypes.string.isRequired
 };
 
-export default class Battle extends React.Component {
-  state = {
-    playerOne: null,
-    playerTwo: null
-  };
-
-  handleReset = ( id ) => {
-    this.setState({
-      [id]: null
-    });
-  };
-
-  handleSubmit = ( id, player ) => {
-    this.setState({
-      [id]: player
-    });
-  };
-
-  render() {
-    const { playerOne, playerTwo } = this.state;
-
-    return (
-      <>
-        <Instructions />
-
-        <div className="players-container">
-          <h1 className="center-text header-lg">Players</h1>
-          <div className="row space-around">
-            {playerOne === null
-              ? <PlayerInput
-                  label="Player One"
-                  onSubmit={player => this.handleSubmit( 'playerOne', player )}
-                />
-              : <PlayerPreview
-                  username={playerOne}
-                  label="Player One"
-                  onReset={() => this.handleReset( 'playerOne' )}
-                />
-            }
-
-            {playerTwo === null
-              ? <PlayerInput
-                  label="Player Two"
-                  onSubmit={player => this.handleSubmit( 'playerTwo', player )}
-                />
-              : <PlayerPreview
-                  username={playerTwo}
-                  label="Player Two"
-                  onReset={() => this.handleReset( 'playerTwo' )}
-                />
-            }
-          </div>
-          {playerOne && playerTwo && (
-            <Link
-              className="btn dark-btn btn-space"
-              to={{
-                pathname: '/battle/results',
-                search: `?playerOne=${playerOne}&playerTwo=${playerTwo}`
-              }}
-            >
-              Battle
-            </Link>
-          )}
-        </div>
-      </>
-    );
+function playerReducer( state, action ) {
+  switch ( action.type ) {
+    case 'reset':
+      return {
+        ...state,
+        [action.id]: null
+      };
+    case 'submit':
+      return {
+        ...state,
+        [action.id]: action.player
+      };
+    default:
+      throw new Error( 'Something went wrong' );
   }
+}
+
+const initialState = {
+  playerOne: null,
+  playerTwo: null
+}
+
+export default function Battle() {
+  const [state, dispatch] = useReducer( playerReducer, initialState );
+  const { playerOne, playerTwo } = state;
+
+  return (
+    <>
+      <Instructions />
+
+      <div className="players-container">
+        <h1 className="center-text header-lg">Players</h1>
+        <div className="row space-around">
+          {playerOne === null
+            ? <PlayerInput
+                label="Player One"
+                onSubmit={player => dispatch({ type: 'submit', id: 'playerOne', player })}
+              />
+            : <PlayerPreview
+                username={playerOne}
+                label="Player One"
+                onReset={() => dispatch({ type: 'reset', id: 'playerOne' })}
+              />
+          }
+
+          {playerTwo === null
+            ? <PlayerInput
+                label="Player Two"
+                onSubmit={player => dispatch({ type: 'submit', id: 'playerTwo', player })}
+              />
+            : <PlayerPreview
+                username={playerTwo}
+                label="Player Two"
+                onReset={() => dispatch({ type: 'reset', id: 'playerTwo' })}
+              />
+          }
+        </div>
+        {playerOne && playerTwo && (
+          <Link
+            className="btn dark-btn btn-space"
+            to={{
+              pathname: '/battle/results',
+              search: `?playerOne=${playerOne}&playerTwo=${playerTwo}`
+            }}
+          >
+            Battle
+          </Link>
+        )}
+      </div>
+    </>
+  );
 }

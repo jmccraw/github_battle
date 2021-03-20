@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
 
 const styles = {
   content: {
@@ -23,10 +22,10 @@ export default function Loading({ text = 'Loading', speed = 300 }) {
       setContent( content => {
         return content === `${text}...` ? text : `${content}.`;
       } )
-    }, speed )
+    }, speed );
 
     return clear;
-  }, [ speed ] );
+  }, [ text, speed ] );
 
   return (
     <p style={styles.content}>

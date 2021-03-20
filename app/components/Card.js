@@ -4,6 +4,7 @@ import Theme from '../contexts/theme';
 
 export default function Card({ header, subheader, avatar, href, name, children }) {
   const { theme } = useContext( Theme );
+
   return (
     <div className={`card bg-${theme}`}>
       <h4 className="header-lg center-text">
